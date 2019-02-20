@@ -1,17 +1,15 @@
 import os
 import mutagen
+from tinytag import TinyTag
+from mutagen import flac
 
 
 def songTitleFormat(oriTitle):
     if oriTitle[-1] == ')':
         i = oriTitle.find('(')
-        j = oriTitle.find(')')
-        flag1 = oriTitle.find('Remastered')
-        flag2 = oriTitle.find('Version')
-        flag3 = oriTitle.find('Remaster')
-        if flag1 != -1 or flag2 != -1 or flag3 != -1:
+        _set = ['Remastered', 'Version', 'Remaster']
+        if(oriTitle.find(_str) >= i for _str in _set):
             return oriTitle[0:i-1]
-        return oriTitle
     return oriTitle
 
 
@@ -23,11 +21,24 @@ def acquireInfo(src):
     albumName = mu.get("TALB").text[0]
     if int(trackNum) < 10:
         trackNum = '0' + trackNum
+    print(trackNum, performer, songName, albumName)
+    return trackNum, performer, songName, albumName
+
+
+def acquireFlacInfo(src):
+    mu = flac.FLAC(src)
+    trackNum = mu.get("TRCK").text[0]  # 得到音轨号
+    performer = mu.get("TPE1").text[0]  # 得到表演者
+    songName = songTitleFormat(mu.get("TIT2").text[0])  # 得到歌曲名称
+    albumName = mu.get("TALB").text[0]
+    if int(trackNum) < 10:
+        trackNum = '0' + trackNum
     # print(trackNum, performer, songName, albumName)
     return trackNum, performer, songName, albumName
 
 
 def main():
+    '''
     dir = "E:/CloudMusic/Television/Marquee Moon"  # 需要处理的歌曲目录，请根据实际情况替换
     os.chdir(dir)
     songsList = os.listdir(dir)
@@ -37,5 +48,7 @@ def main():
         newName = trackNum + ' - ' + songName + ' - ' + performer + '.mp3'
         print(newName)
         os.rename(song, newName)
-
+    '''
+    src = "E:/CloudMusic/The Allman Brothers Band\The Allman Brothers Band/01 - Don't Want You No More - The Allman Brothers Band.mp3"
+    acquireInfo(src)
 # main()
